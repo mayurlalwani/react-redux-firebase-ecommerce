@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import './styles.scss';
 import AuthWrapper from '../AuthWrapper';
 import FormInput from '../../components/forms/FormInput';
 import Button from '../../components/forms/Button';

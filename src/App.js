@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Homepage from './pages/homepage';
 import Registration from './pages/Registration';
 import Login from './pages/Login';
+import Recovery from './pages/Recovery';
 import { Route, Switch, Redirect } from 'react-router-dom';
 
 import './default.scss';
@@ -77,6 +78,18 @@ class App extends Component {
               ) : (
                 <MainLayout currentUser={currentUser}>
                   <Login />
+                </MainLayout>
+              )
+            }
+          />
+          <Route
+            path="/recovery"
+            render={() =>
+              currentUser ? (
+                <Redirect to="/" />
+              ) : (
+                <MainLayout currentUser={currentUser}>
+                  <Recovery />
                 </MainLayout>
               )
             }

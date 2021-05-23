@@ -1,7 +1,7 @@
-import { auth } from './../../firebase/utils';
-import { Link } from 'react-router-dom';
-import { connect } from 'react-redux';
-import './styles.scss';
+import { auth } from "./../../firebase/utils";
+import { Link } from "react-router-dom";
+import { connect } from "react-redux";
+import "./styles.scss";
 
 const Header = (props) => {
   const { currentUser } = props;
@@ -10,6 +10,9 @@ const Header = (props) => {
       <div className="callToActions">
         {!currentUser ? (
           <ul>
+            <li>
+              <Link to="/dashboard">MY Account</Link>
+            </li>
             <li>
               <Link to="/registration">Register</Link>
             </li>

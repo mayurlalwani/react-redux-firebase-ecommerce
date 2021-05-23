@@ -1,45 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { withRouter } from "react-router-dom";
 import FormInput from "../forms/FormInput";
 import Button from "../forms/Button";
 import AuthWrapper from "../AuthWrapper";
-import { auth, handleUserProfile } from "./../../firebase/utils";
+import { useDispatch, useSelector } from "react-redux";
+import { signUpUser, resetAllAuthForms } from "./../../redux/User/user.actions";
+
 import "./styles.scss";
 
+const mapState = ({ user }) => ({
+  signUpSuccess: user.signUpSuccess,
+  signUpError: user.signUpError,
+});
+
 const Signup = (props) => {
+  const dispatch = useDispatch();
+  const { signUpSuccess, signUpError } = useSelector(mapState);
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState([]);
 
-  const handleFormSubmit = async (event) => {
+  const handleFormSubmit = (event) => {
     event.preventDefault();
-    if (password !== confirmPassword) {
-      const err = ["Passwords do not match"];
-      setErrors(err);
-      return;
-    }
-
-    try {
-      const { user } = await auth.createUserWithEmailAndPassword(
-        email,
-        password
-      );
-      await handleUserProfile(user, { displayName });
-      props.history.push("/");
-      setErrors([]);
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
-    } catch (error) {
-      console.log(error);
-    }
+    dispatch(signUpUser({ displayName, email, password, confirmPassword }));
   };
 
   const configAuthWrapper = {
     headline: "Registration",
   };
+
+  useEffect(() => {
+    if (signUpSuccess) {
+      props.history.push("/");
+      dispatch(resetAllAuthForms());
+    }
+  }, [signUpSuccess]);
+
+  useEffect(() => {
+    if (Array.isArray(signUpError) && signUpError.length > 0) {
+      setErrors(signUpError);
+    }
+  }, [signUpError]);
+
   return (
     <AuthWrapper {...configAuthWrapper}>
       <div className="formWrap">

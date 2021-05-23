@@ -1,39 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AuthWrapper from "../AuthWrapper";
 import FormInput from "../../components/forms/FormInput";
 import Button from "../../components/forms/Button";
-import { auth } from "../../firebase/utils";
 import { withRouter } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  resetPassword,
+  resetAllAuthForms,
+} from "./../../redux/User/user.actions";
+
+const mapState = ({ user }) => ({
+  resetPasswordSuccess: user.resetPasswordSuccess,
+  resetPasswordError: user.resetPasswordError,
+});
 
 const EmailPassword = (props) => {
+  const { resetPasswordSuccess, resetPasswordError } = useSelector(mapState);
+  const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [errors, setErrors] = useState([]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const config = {
-        url: "http://localhost:3000/login",
-      };
-      await auth
-        .sendPasswordResetEmail(email, config)
-        .then(() => {
-          props.history.push("/login");
-          console.log("Password reset successfully");
-        })
-        .catch(() => {
-          const err = ["Email does not exist"];
-          setErrors(err);
-          console.log("Email does not exist");
-        });
-    } catch (error) {
-      console.log(error);
-    }
+    dispatch(resetPassword({ email }));
   };
 
   const configAuthWrapper = {
     headline: "Email password",
   };
+
+  useEffect(() => {
+    if (resetPasswordSuccess) {
+      dispatch(resetAllAuthForms());
+
+      props.history.push("/login");
+    }
+  }, [resetPasswordSuccess]);
+
+  useEffect(() => {
+    if (Array.isArray(resetPasswordError) && resetPasswordError.length > 0) {
+      setErrors(resetPasswordError);
+    }
+  }, [resetPasswordError]);
+
   return (
     <AuthWrapper {...configAuthWrapper}>
       <div className="formWrap">
